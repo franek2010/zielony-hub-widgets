@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ile do wolnego — Zielony Hub</title>
+<style>
+:root{
+  --page:#191919;
+  --card:#214a34;
+  --card-2:#28573d;
+  --card-3:#173824;
+  --text:#f3f5ed;
+  --muted:#a7b8aa;
+  --accent:#c8eb67;
+  --accent-soft:#7fbd8c;
+  --line:rgba(255,255,255,.075);
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  background:var(--page);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--text);
+}
+body{padding:0}
+.widget{
+  width:100%;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(200,235,103,.12),transparent 24%),
+    linear-gradient(145deg,var(--card),#1f4531 72%);
+  border-radius:18px;
+  padding:18px;
+  overflow:hidden;
+}
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+.title{
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:-.01em;
+}
+.micro{
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  color:rgba(255,255,255,.34);
+}
+.hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 118px;
+  gap:14px;
+  align-items:stretch;
+  margin-bottom:12px;
+}
+.hero-main{
+  background:rgba(0,0,0,.10);
+  border-radius:15px;
+  padding:15px 16px 14px;
+  min-width:0;
+}
+.kicker{
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.15em;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.hero-name{
+  font-size:20px;
+  font-weight:820;
+  letter-spacing:-.025em;
+  line-height:1.05;
+  margin-bottom:8px;
+}
+.hero-date{
+  font-size:11px;
+  color:var(--muted);
+}
+.countbox{
+  background:var(--accent);
+  color:#18331f;
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:104px;
+}
+.count{
+  font-size:38px;
+  font-weight:900;
+  line-height:.9;
+  font-variant-numeric:tabular-nums;
+}
+.count-label{
+  margin-top:6px;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  opacity:.68;
+}
+.timeline{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
+.tile{
+  position:relative;
+  min-width:0;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:11px 11px 10px;
+  overflow:hidden;
+}
+.tile:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:var(--accent-soft);
+  opacity:.75;
+}
+.tile-name{
+  font-size:12px;
+  font-weight:730;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  padding-left:3px;
+}
+.tile-meta{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:7px;
+  padding-left:3px;
+}
+.tile-date{
+  font-size:9px;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.tile-days{
+  font-size:15px;
+  font-weight:850;
+  color:var(--accent);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.footer{
+  margin-top:10px;
+  display:flex;
+  justify-content:flex-end;
+  font-size:9px;
+  color:rgba(255,255,255,.27);
+}
+@media(max-width:540px){
+  .hero{grid-template-columns:1fr 96px}
+  .count{font-size:32px}
+  .timeline{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<section class="widget" aria-label="Ile do wolnego">
+  <div class="top">
+    <div class="title">Ile do wolnego</div>
+    <div class="micro">szkolny radar</div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-main">
+      <div class="kicker">najbliższe wolne</div>
+      <div class="hero-name" id="heroName">Weekend</div>
+      <div class="hero-date" id="heroDate">—</div>
+    </div>
+    <div class="countbox">
+      <div class="count" id="heroCount">0</div>
+      <div class="count-label" id="heroLabel">dni</div>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <div class="footer">automatycznie aktualizowane</div>
+</section>
+
+<script>
+(function(){
+  const DAY=86400000;
+  const sod=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const diff=(d,now)=>Math.max(0,Math.round((sod(d)-sod(now))/DAY));
+  const fmt=d=>new Intl.DateTimeFormat('pl-PL',{day:'numeric',month:'short'}).format(d);
+
+  function easterSunday(y){
+    const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
+    f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+    i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,
+    m=Math.floor((a+11*h+22*l)/451),
+    month=Math.floor((h+l-7*m+114)/31),
+    day=((h+l-7*m+114)%31)+1;
+    return new Date(y,month-1,day);
+  }
+
+  function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+
+  function nextWeekend(now){
+    const d=now.getDay();
+    if(d===6||d===0) return {name:'Weekend',date:sod(now),kind:'weekend'};
+    return {name:'Weekend',date:addDays(sod(now),6-d),kind:'weekend'};
+  }
+
+  // Oficjalne ogólnopolskie przerwy szkolne 2026/2027.
+  const schoolBreaks=[
+    {name:'Przerwa świąteczna',date:new Date(2026,11,23),until:new Date(2026,11,31)},
+    {name:'Wiosenna przerwa',date:new Date(2027,2,25),until:new Date(2027,2,30)},
+    {name:'Wakacje',date:new Date(2027,5,26),until:new Date(2027,7,31)}
+  ];
+
+  function statutory(y){
+    const easter=easterSunday(y);
+    return [
+      {name:'Nowy Rok',date:new Date(y,0,1)},
+      {name:'Trzech Króli',date:new Date(y,0,6)},
+      {name:'Poniedziałek Wielkanocny',date:addDays(easter,1)},
+      {name:'1 maja',date:new Date(y,4,1)},
+      {name:'3 maja',date:new Date(y,4,3)},
+      {name:'Boże Ciało',date:addDays(easter,60)},
+      {name:'15 sierpnia',date:new Date(y,7,15)},
+      {name:'Wszystkich Świętych',date:new Date(y,10,1)},
+      {name:'11 listopada',date:new Date(y,10,11)},
+      {name:'Boże Narodzenie',date:new Date(y,11,25)},
+      {name:'Drugi dzień Świąt',date:new Date(y,11,26)}
+    ];
+  }
+
+  function inBreak(d){
+    return schoolBreaks.some(b=>sod(d)>=sod(b.date)&&sod(d)<=sod(b.until));
+  }
+
+  function collect(now){
+    let events=[nextWeekend(now)];
+
+    for(const b of schoolBreaks){
+      if(sod(b.until)>=sod(now)){
+        events.push({
+          name:b.name,
+          date:sod(now)>=sod(b.date)&&sod(now)<=sod(b.until)?sod(now):b.date,
+          until:b.until,
+          kind:'break'
+        });
+      }
+    }
+
+    for(const y of [now.getFullYear(),now.getFullYear()+1]){
+      for(const e of statutory(y)){
+        if(sod(e.date)<sod(now)) continue;
+        const dow=e.date.getDay();
+        if(dow===0||dow===6) continue;
+        if(inBreak(e.date)) continue;
+        events.push({...e,kind:'holiday'});
+      }
+    }
+
+    const seen=new Set();
+    events=events.filter(e=>{
+      const key=e.name+'|'+sod(e.date).getTime();
+      if(seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    events.sort((a,b)=>sod(a.date)-sod(b.date));
+    return events;
+  }
+
+  function render(){
+    const now=new Date();
+    const events=collect(now);
+
+    const hero=events[0];
+    const heroDays=diff(hero.date,now);
+    document.getElementById('heroName').textContent=hero.name;
+    document.getElementById('heroDate').textContent=hero.until ? `${fmt(hero.date)} – ${fmt(hero.until)}` : fmt(hero.date);
+    document.getElementById('heroCount').textContent=heroDays;
+    document.getElementById('heroLabel').textContent=heroDays===1?'dzień':'dni';
+
+    const timeline=document.getElementById('timeline');
+    timeline.innerHTML='';
+
+    events.slice(1,4).forEach(e=>{
+      const d=diff(e.date,now);
+      const tile=document.createElement('div');
+      tile.className='tile';
+      tile.innerHTML=`
+        <div class="tile-name"></div>
+        <div class="tile-meta">
+          <div class="tile-date"></div>
+          <div class="tile-days"></div>
+        </div>`;
+      tile.querySelector('.tile-name').textContent=e.name;
+      tile.querySelector('.tile-date').textContent=e.until ? `${fmt(e.date)}–${fmt(e.until)}` : fmt(e.date);
+      tile.querySelector('.tile-days').textContent=d===0?'0 dni':d===1?'1 dzień':d+' dni';
+      timeline.appendChild(tile);
+    });
+  }
+
+  render();
+  setInterval(render,60000);
+})();
+</script>
+</body>
+</html>
