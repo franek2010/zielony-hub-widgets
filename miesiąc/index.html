@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Miesiąc w toku — dopracowany</title>
+<style>
+:root{
+  --page:#191919;
+  --card:#243f31;
+  --pill:#2e4b3a;
+  --ring-track:#355643;
+  --ring:#98db7b;
+  --text:#ffffff;
+  --muted:#839589;
+  --line:rgba(255,255,255,.10);
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--page);
+  font-family:var(--ui);
+  color:var(--text);
+}
+body{overflow:hidden}
+
+.card{
+  width:100%;
+  min-height:210px;
+  background:var(--card);
+  border-radius:16px;
+  padding:18px 20px 18px;
+}
+
+.title{
+  display:inline-flex;
+  align-items:center;
+  height:27px;
+  padding:0 11px;
+  border-radius:999px;
+  background:var(--pill);
+  font-size:11px;
+  line-height:1;
+  font-weight:700;
+}
+
+.content{
+  display:grid;
+  grid-template-columns:124px 1fr;
+  gap:24px;
+  align-items:center;
+  margin-top:9px;
+}
+
+/* LEFT */
+.left{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.month{
+  width:100%;
+  text-align:center;
+  font:700 18px/1.1 var(--serif);
+  margin-bottom:9px;
+  color:#f2f1ea;
+}
+
+.ring{
+  --p:94;
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  background:
+    conic-gradient(
+      var(--ring) 0 calc(var(--p)*1%),
+      var(--ring-track) calc(var(--p)*1%) 100%
+    );
+  position:relative;
+  display:grid;
+  place-items:center;
+}
+.ring::after{
+  content:"";
+  position:absolute;
+  inset:9px; /* thinner, more delicate ring */
+  border-radius:50%;
+  background:var(--card);
+}
+.ring-center{
+  position:relative;
+  z-index:1;
+  text-align:center;
+}
+.percent{
+  font-size:27px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.03em;
+}
+.count{
+  margin-top:8px;
+  color:#6f8878;
+  font-size:7px;
+  line-height:1;
+}
+
+/* RIGHT */
+.rows{
+  min-width:0;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  align-items:center;
+  min-height:42px;
+}
+.row:first-child{
+  align-items:center;
+  padding-top:10px;
+  padding-bottom:10px;
+}
+.row + .row{
+  border-top:1px solid var(--line);
+  padding-top:10px;
+}
+.week-row{
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding-top:10px;
+  padding-bottom:10px;
+}
+.week-row .label{
+  align-self:center;
+  padding:0;
+}
+
+.label{
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.value{
+  justify-self:end;
+  font-size:18px;
+  font-weight:800;
+}
+
+/* week days */
+.week-wrap{
+  justify-self:end;
+  width:100%;
+  max-width:360px;
+  align-self:center;
+}
+
+.week-days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.day{
+  text-align:center;
+}
+.day-box{
+  width:100%;
+  aspect-ratio:1.2/1;
+  min-height:28px;
+  border-radius:6px;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  color:#78917f;
+  background:rgba(255,255,255,.025);
+}
+.day-box.past{
+  background:rgba(152,219,123,.08);
+}
+.day-box.today{
+  background:var(--ring);
+  color:#17301e;
+  font-weight:900;
+}
+
+@media(max-width:520px){
+  .card{
+    min-height:200px;
+    padding:16px 16px 16px;
+  }
+  .content{
+    grid-template-columns:112px 1fr;
+    gap:16px;
+  }
+  .ring{
+    width:100px;
+    height:100px;
+  }
+  .month{
+    font-size:17px;
+  }
+  .label{
+    font-size:12px;
+  }
+  .value{
+    font-size:17px;
+  }
+  .week-days{
+    gap:4px;
+  }
+  .day-box{
+    min-height:26px;
+    font-size:9px;
+  }
+  }
+</style>
+</head>
+<body>
+<section class="card">
+  <div class="title">Miesiąc w toku</div>
+
+  <div class="content">
+    <div class="left">
+      <div class="month" id="monthName">Sierpień</div>
+
+      <div class="ring" id="ring">
+        <div class="ring-center">
+          <div class="percent" id="percent">94%</div>
+          <div class="count" id="count">29 / 31</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rows">
+      <div class="row">
+        <div class="label">Tydzień roku</div>
+        <div class="value" id="weekNo">35</div>
+      </div>
+
+      <div class="row week-row">
+        <div class="label">Tydzień</div>
+
+        <div class="week-wrap">
+          <div class="week-days" id="weekDays"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const MONTHS=["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
+const SHORT=["Pn","Wt","Śr","Czw","Pt","Sob","Nd"];
+
+function isoWeekNumber(date){
+  const d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
+  const dayNum=d.getUTCDay()||7;
+  d.setUTCDate(d.getUTCDate()+4-dayNum);
+  const yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d-yearStart)/86400000)+1)/7);
+}
+
+function render(){
+  const now=new Date();
+  const y=now.getFullYear();
+  const m=now.getMonth();
+  const today=now.getDate();
+  const total=new Date(y,m+1,0).getDate();
+  const pct=Math.round((today/total)*100);
+
+  document.getElementById("monthName").textContent=MONTHS[m];
+  document.getElementById("percent").textContent=pct+"%";
+  document.getElementById("count").textContent=`${today} / ${total}`;
+  document.getElementById("ring").style.setProperty("--p",pct);
+  document.getElementById("weekNo").textContent=isoWeekNumber(now);
+
+  const mondayOffset=(now.getDay()+6)%7;
+  const monday=new Date(y,m,today-mondayOffset);
+  const container=document.getElementById("weekDays");
+  container.innerHTML="";
+
+  for(let i=0;i<7;i++){
+    const d=new Date(monday);
+    d.setDate(monday.getDate()+i);
+
+    const wrap=document.createElement("div");
+    wrap.className="day";
+
+    const box=document.createElement("div");
+    box.className="day-box";
+    box.textContent=d.getDate();
+
+    const todayStart=new Date(y,m,today);
+    if(d.toDateString()===now.toDateString()){
+      box.classList.add("today");
+    }else if(d<todayStart){
+      box.classList.add("past");
+    }
+
+    wrap.appendChild(box);
+    container.appendChild(wrap);
+  }
+}
+
+render();
+setInterval(render,60000);
+</script>
+</body>
+</html>
