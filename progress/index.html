@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ile dowiozłeś — Zielony Hub</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#1f5134;--bg2:#183f2a;--lime:#c8ee63;--text:#f4f1e9;--muted:#9fba96;--track:#315f43;--tile:#bfe65f;--tile-off:#31583d}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:#191919;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+body{display:flex;align-items:center;justify-content:center}
+.card{width:100%;max-width:760px;min-height:340px;background:linear-gradient(145deg,var(--bg),var(--bg2));border-radius:24px;padding:28px 34px 30px;position:relative;overflow:hidden}
+.card:before,.card:after{content:"";position:absolute;border-radius:50%;background:rgba(185,226,99,.14)}
+.card:before{width:42px;height:42px;right:18px;top:-8px}
+.card:after{width:32px;height:32px;right:44px;top:18px}
+.header{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.header h1{font:700 italic 28px/1.1 Georgia,serif;margin:0}
+.header span{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.content{display:grid;grid-template-columns:220px 1fr;gap:36px;align-items:center}
+.ring-wrap{display:flex;justify-content:center}
+.ring{--p:70;width:190px;height:190px;border-radius:50%;background:conic-gradient(var(--lime) calc(var(--p)*1%),var(--track) 0);position:relative;display:grid;place-items:center;transform:rotate(-8deg)}
+.ring:before{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--bg2)}
+.ring-inner{position:relative;z-index:2;text-align:center;transform:rotate(8deg)}
+.score{font-size:46px;font-weight:800;line-height:1}
+.score small{font-size:22px;color:var(--muted);font-weight:700}
+.ring-label{font-size:11px;letter-spacing:.17em;color:var(--muted);margin-top:6px}
+.streak-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:22px}
+.streak-num{font-size:48px;font-weight:800;color:var(--lime);line-height:.9}
+.streak-copy{font-size:18px;line-height:1.35;padding-top:2px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}
+.day{text-align:center}
+.day button{width:100%;aspect-ratio:1;border:0;border-radius:10px;background:var(--tile-off);cursor:pointer;transition:.15s ease}
+.day button.on{background:var(--tile)}
+.day button.today{outline:3px solid #eef7d3;outline-offset:-3px}
+.day span{display:block;margin-top:7px;font-size:11px;letter-spacing:.08em;color:var(--muted)}
+.settings-btn{position:absolute;right:22px;bottom:18px;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:17px}
+.panel{position:absolute;inset:auto 18px 18px 18px;background:#163925;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:none;z-index:10;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.panel.show{display:block}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+label{font-size:11px;color:var(--muted)}
+input{width:100%;margin-top:5px;background:#0f2e1d;color:var(--text);border:1px solid #335d43;border-radius:9px;padding:9px 10px}
+.actions{display:flex;justify-content:space-between;gap:8px;margin-top:12px}
+.btn{border:0;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:700}
+.btn.primary{background:var(--lime);color:#17341f}
+.btn.ghost{background:#244a32;color:var(--text)}
+.auth{width:100%;max-width:560px;background:linear-gradient(145deg,var(--bg),var(--bg2));border-radius:24px;padding:34px}
+.auth h2{margin:0 0 8px;font:700 italic 30px Georgia,serif}
+.auth p{color:var(--muted);line-height:1.5}
+.auth-row{display:flex;gap:8px;margin-top:18px}
+.auth-row input{margin:0;flex:1}
+.status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+.hidden{display:none!important}
+.logout{position:absolute;left:28px;bottom:20px;border:0;background:transparent;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer}
+@media(max-width:650px){.card{padding:24px 20px;min-height:0}.content{grid-template-columns:1fr;gap:22px}.ring{width:165px;height:165px}.streak-row{justify-content:center}}
+</style>
+</head>
+<body>
+<section id="authBox" class="auth">
+  <h2>Ile dowiozłeś</h2>
+  <p>Zaloguj się mailem. Dostaniesz bezpieczny link, a Twoje dane będą prywatne i dostępne także na innym urządzeniu.</p>
+  <div class="auth-row">
+    <input id="email" type="email" placeholder="twój@email.pl" autocomplete="email">
+    <button id="sendLink" class="btn primary">Wyślij link</button>
+  </div>
+  <div id="authStatus" class="status"></div>
+</section>
+
+<section id="app" class="card hidden">
+  <div class="header"><h1>Ile dowiozłeś</h1><span>liczy się z odhaczania</span></div>
+  <div class="content">
+    <div class="ring-wrap">
+      <div id="ring" class="ring">
+        <div class="ring-inner">
+          <div class="score"><span id="doneText">0</span><small>/<span id="totalText">23</span></small></div>
+          <div class="ring-label">TEN TYDZIEŃ</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="streak-row"><div id="streakText" class="streak-num">0</div><div class="streak-copy">dni z rzędu, w których coś<br>odhaczyłeś</div></div>
+      <div id="days" class="days"></div>
+    </div>
+  </div>
+  <button id="settingsBtn" class="settings-btn" title="Edytuj">⚙</button>
+  <button id="logoutBtn" class="logout">wyloguj</button>
+  <div id="panel" class="panel">
+    <div class="form-grid">
+      <label>Zrobione<input id="doneInput" type="number" min="0"></label>
+      <label>Wszystkie<input id="totalInput" type="number" min="1"></label>
+      <label>Seria<input id="streakInput" type="number" min="0"></label>
+    </div>
+    <div class="actions"><button id="closePanel" class="btn ghost">Anuluj</button><button id="savePanel" class="btn primary">Zapisz</button></div>
+  </div>
+</section>
+
+<script>
+const SUPABASE_URL = "https://eeeeevgenlpwfclhaeiy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_krq7pthAevsRMFinm-Li5Q_ochdZBv6";
+const REDIRECT_TO = "https://franek2010.github.io/zielony-hub-widgets/progress/";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const dayKeys=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+const dayLabels=['PON','WT','ŚR','CZW','PT','SOB','NDZ'];
+let currentUser=null,state=null;
+const $=id=>document.getElementById(id);
+
+function render(){
+  if(!state)return;
+  const done=Math.max(0,Number(state.done)||0),total=Math.max(1,Number(state.total)||1),streak=Math.max(0,Number(state.streak)||0);
+  const pct=Math.max(0,Math.min(100,done/total*100));
+  $('ring').style.setProperty('--p',pct.toFixed(2)); $('doneText').textContent=done; $('totalText').textContent=total; $('streakText').textContent=streak;
+  const jsDay=new Date().getDay(),todayIndex=jsDay===0?6:jsDay-1;
+  $('days').innerHTML='';
+  dayKeys.forEach((key,i)=>{
+    const wrap=document.createElement('div');wrap.className='day';
+    const btn=document.createElement('button');
+    if(state[key])btn.classList.add('on'); if(i===todayIndex)btn.classList.add('today');
+    btn.onclick=async()=>{state[key]=!state[key];render();await savePatch({[key]:state[key]})};
+    const lab=document.createElement('span');lab.textContent=dayLabels[i];
+    wrap.append(btn,lab);$('days').appendChild(wrap);
+  });
+}
+async function loadProgress(){
+  const {data,error}=await sb.from('progress').select('*').eq('user_id',currentUser.id).maybeSingle();
+  if(error)throw error;
+  if(data)state=data;
+  else {
+    const fresh={user_id:currentUser.id,done:0,total:23,streak:0};
+    const {data:inserted,error:insErr}=await sb.from('progress').insert(fresh).select().single();
+    if(insErr)throw insErr; state=inserted;
+  }
+  render();
+}
+async function savePatch(patch){
+  if(!currentUser)return;
+  const {error}=await sb.from('progress').update({...patch,updated_at:new Date().toISOString()}).eq('user_id',currentUser.id);
+  if(error)console.error(error);
+}
+async function showForSession(session){
+  if(!session?.user){currentUser=null;$('authBox').classList.remove('hidden');$('app').classList.add('hidden');return;}
+  currentUser=session.user;$('authBox').classList.add('hidden');$('app').classList.remove('hidden');
+  try{await loadProgress()}catch(e){console.error(e);alert('Nie udało się wczytać danych widgetu.')}
+}
+$('sendLink').onclick=async()=>{
+  const email=$('email').value.trim(); if(!email)return;
+  $('authStatus').textContent='Wysyłam link…';
+  const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:REDIRECT_TO}});
+  $('authStatus').textContent=error?('Błąd: '+error.message):'Gotowe. Sprawdź pocztę i kliknij link logowania.';
+};
+$('settingsBtn').onclick=()=>{$('doneInput').value=state.done;$('totalInput').value=state.total;$('streakInput').value=state.streak;$('panel').classList.add('show')};
+$('closePanel').onclick=()=>$('panel').classList.remove('show');
+$('savePanel').onclick=async()=>{
+  const done=Math.max(0,parseInt($('doneInput').value||'0',10)),total=Math.max(1,parseInt($('totalInput').value||'1',10)),streak=Math.max(0,parseInt($('streakInput').value||'0',10));
+  state.done=Math.min(done,total);state.total=total;state.streak=streak;render();$('panel').classList.remove('show');
+  await savePatch({done:state.done,total:state.total,streak:state.streak});
+};
+$('logoutBtn').onclick=async()=>await sb.auth.signOut();
+sb.auth.onAuthStateChange((_event,session)=>showForSession(session));
+(async()=>{const {data}=await sb.auth.getSession();await showForSession(data.session)})();
+</script>
+</body>
+</html>
