@@ -7,13 +7,19 @@
 <style>
 :root{
   --notion:#191919;
-  --card:#214a34;
-  --card2:#28573d;
-  --text:#f3f5ed;
-  --muted:#a7b8aa;
-  --accent:#c8eb67;
-  --accent2:#7fbd8c;
-  --line:rgba(255,255,255,.075);
+  --card:#263D30;
+  --card2:#32483B;
+  --text:#F2F3ED;
+  --muted:#87968A;
+
+  --sage:#9DBB9A;
+  --sage-deep:#78957A;
+  --mist:#8FA7A2;
+  --lav:#9C93A6;
+
+  --accent:#8FCB7B;
+  --accent2:#6FA67A;
+  --line:rgba(255,255,255,.065);
 }
 *{box-sizing:border-box}
 html,body{
@@ -37,14 +43,12 @@ html,body{
   background:var(--notion);
 }
 .widget{
-  width:min(100%, 560px);
+  width:min(100%, 620px);
   height:auto;
   min-width:0;
-  background:
-    radial-gradient(circle at 92% 8%,rgba(200,235,103,.11),transparent 23%),
-    linear-gradient(145deg,var(--card),#1f4531 72%);
-  border-radius:16px;
-  padding:16px;
+  background:var(--card);
+  border-radius:12px;
+  padding:15px 16px 14px;
   overflow:hidden;
   display:flex;
   flex-direction:column;
@@ -58,15 +62,29 @@ html,body{
   flex:0 0 auto;
 }
 .title{
-  font-size:14px;
-  font-weight:800;
+  position:relative;
+  font-size:13px;
+  font-weight:760;
   letter-spacing:-.01em;
+  color:var(--text);
+  padding-left:11px;
+}
+.title::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:2px;
+  bottom:2px;
+  width:3px;
+  border-radius:999px;
+  background:var(--sage);
+  opacity:.82;
 }
 .micro{
-  font-size:9px;
+  font-size:8px;
   text-transform:uppercase;
-  letter-spacing:.16em;
-  color:rgba(255,255,255,.34);
+  letter-spacing:.15em;
+  color:rgba(242,243,237,.26);
   white-space:nowrap;
 }
 .hero{
@@ -78,9 +96,12 @@ html,body{
   flex:0 0 auto;
 }
 .hero-main{
-  background:rgba(0,0,0,.10);
-  border-radius:13px;
-  padding:13px 14px 12px;
+  background:
+    linear-gradient(135deg,rgba(157,187,154,.055),rgba(143,167,162,.03) 58%),
+    rgba(0,0,0,.065);
+  border:1px solid rgba(157,187,154,.10);
+  border-radius:10px;
+  padding:12px 13px 11px;
   min-width:0;
 }
 .kicker{
@@ -102,28 +123,42 @@ html,body{
   color:var(--muted);
 }
 .countbox{
-  background:var(--accent);
-  color:#18331f;
-  border-radius:13px;
+  position:relative;
+  background:#30473A;
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:10px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   min-height:88px;
+  overflow:hidden;
+}
+.countbox::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:3px;
+  background:var(--sage);
+  opacity:.72;
 }
 .count{
-  font-size:34px;
-  font-weight:900;
+  font-size:32px;
+  font-weight:820;
   line-height:.9;
+  color:#C8D3CA;
   font-variant-numeric:tabular-nums;
 }
 .count-label{
   margin-top:5px;
-  font-size:9px;
-  font-weight:800;
+  font-size:8px;
+  font-weight:750;
   text-transform:uppercase;
   letter-spacing:.12em;
-  opacity:.68;
+  color:#7F9183;
 }
 .timeline{
   display:grid;
@@ -135,19 +170,21 @@ html,body{
 .tile{
   position:relative;
   min-width:0;
-  background:rgba(255,255,255,.035);
-  border:1px solid var(--line);
-  border-radius:12px;
+  background:#2B4335;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:9px;
   padding:10px 10px 9px;
   overflow:hidden;
 }
 .tile:before{
   content:"";
   position:absolute;
-  left:0;top:0;bottom:0;width:3px;
-  background:var(--accent2);
-  opacity:.75;
+  left:0;top:0;bottom:0;width:2px;
+  background:var(--sage-deep);
+  opacity:.66;
 }
+
+
 .tile-name{
   font-size:11px;
   font-weight:730;
@@ -170,12 +207,13 @@ html,body{
   white-space:nowrap;
 }
 .tile-days{
-  font-size:14px;
-  font-weight:850;
-  color:var(--accent);
+  font-size:13px;
+  font-weight:760;
+  color:#86A78D;
   font-variant-numeric:tabular-nums;
   white-space:nowrap;
 }
+
 @media(max-width:560px){
   .hero{grid-template-columns:1fr 92px}
   .count{font-size:30px}
@@ -347,3 +385,12 @@ html,body{
 </script>
 </body>
 </html>
+
+<style>
+.tile:nth-child(2)::before{background:var(--mist);opacity:.72}
+.tile:nth-child(3)::before{background:var(--lav);opacity:.66}
+
+.tile-days{color:#8DAF91}
+
+.tile:nth-child(3) .tile-days{color:#9C93A6}
+</style>
