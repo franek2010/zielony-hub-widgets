@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twój tydzień — wyciągnięty zegar</title>
+
+<style>
+:root{
+  --ui:-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --cien:0 1px 2px rgba(0,0,0,.35), 0 10px 26px -16px rgba(0,0,0,.85);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:transparent;
+}
+
+body{
+  font-family:var(--ui);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+/* Wyśrodkowanie całego zegara w kontenerze Apption */
+#root{
+  width:100vw;
+  height:100vh;
+  min-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:0;
+}
+
+/* DOKŁADNIE sekcja zegara z makiety */
+.zegar{
+  position:relative;
+  width:min(100%,372px);
+  border-radius:14px;
+  box-shadow:var(--cien);
+}
+
+.zegar canvas{
+  border-radius:14px;
+  width:100%;
+  display:block;
+}
+
+.zegar .naw{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+}
+
+.zcyfry{
+  display:flex;
+  gap:12px;
+  align-items:stretch;
+}
+
+.zk{
+  position:relative;
+  min-width:112px;
+  padding:14px 16px 20px;
+  border-radius:11px;
+  background:rgba(255,255,255,.10);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
+.zk .d{
+  font:700 60px/1 var(--ui);
+  letter-spacing:-.045em;
+  color:#F6F2E6;
+  font-variant-numeric:tabular-nums;
+  text-align:center;
+}
+
+.zk::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:1px;
+  background:rgba(0,0,0,.26);
+}
+
+.zk .cap{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:6px;
+  text-align:center;
+  font:700 8.5px var(--ui);
+  letter-spacing:.17em;
+  text-transform:uppercase;
+  color:rgba(246,242,230,.66);
+}
+
+.zdzien{
+  margin-top:13px;
+  font:400 25px/1 Georgia, "Times New Roman", serif;
+  font-style:italic;
+  color:#EBDFAE;
+  letter-spacing:.01em;
+}
+
+.zdata{
+  margin-top:6px;
+  font:600 11px var(--ui);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(246,242,230,.55);
+}
+</style>
+</head>
+
+<body>
+
+<div id="root" data-tryb="ciemny">
+  <div class="zegar">
+    <canvas id="zegarTlo" width="744" height="470"></canvas>
+
+    <div class="naw">
+      <div class="zcyfry">
+        <div class="zk">
+          <div class="d" id="gg">10</div>
+          <div class="cap" id="pora">rano</div>
+        </div>
+
+        <div class="zk">
+          <div class="d" id="mm">30</div>
+          <div class="cap">minut</div>
+        </div>
+      </div>
+
+      <div class="zdzien" id="dzien">środa</div>
+      <div class="zdata" id="data">26 sierpnia</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* DOKŁADNA logika żywego zegara z makiety */
+(function(){
+  var DNI=['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
+  var MIE=['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca',
+           'sierpnia','września','października','listopada','grudnia'];
+
+  function pora(h){
+    return h<5?'noc':h<12?'rano':h<17?'popołudnie':'wieczór';
+  }
+
+  function tik(){
+    var d=new Date();
+
+    document.getElementById('gg').textContent =
+      String(d.getHours()).padStart(2,'0');
+
+    document.getElementById('mm').textContent =
+      String(d.getMinutes()).padStart(2,'0');
+
+    document.getElementById('pora').textContent =
+      pora(d.getHours());
+
+    document.getElementById('dzien').textContent =
+      DNI[d.getDay()];
+
+    document.getElementById('data').textContent =
+      d.getDate()+' '+MIE[d.getMonth()];
+  }
+
+  tik();
+  setInterval(tik,15000);
+})();
+
+/* DOKŁADNE tło / obwódka zegara z makiety */
+function ciemno(){
+  return document.getElementById('root').getAttribute('data-tryb')==='ciemny';
+}
+
+function ctxOf(c){
+  var x=c.getContext('2d');
+  x.clearRect(0,0,c.width,c.height);
+  return x;
+}
+
+function rr(x,a,b,w,h,r){
+  x.beginPath();
+  x.moveTo(a+r,b);
+  x.arcTo(a+w,b,a+w,b+h,r);
+  x.arcTo(a+w,b+h,a,b+h,r);
+  x.arcTo(a,b+h,a,b,r);
+  x.arcTo(a,b,a+w,b,r);
+  x.closePath();
+}
+
+function zegarTlo(c){
+  var x=ctxOf(c), W=c.width, H=c.height, d=ciemno();
+
+  var g=x.createLinearGradient(0,0,W,H);
+  if(d){
+    g.addColorStop(0,'#1D3325');
+    g.addColorStop(1,'#0F1C15');
+  } else {
+    g.addColorStop(0,'#5E7C5A');
+    g.addColorStop(1,'#3F5A3B');
+  }
+
+  x.fillStyle=g;
+  x.fillRect(0,0,W,H);
+
+  var pl=x.createRadialGradient(W*.22,H*.14,8,W*.22,H*.14,W*.62);
+  pl.addColorStop(0,'rgba(224,192,112,.24)');
+  pl.addColorStop(1,'rgba(224,192,112,0)');
+  x.fillStyle=pl;
+  x.fillRect(0,0,W,H);
+
+  x.strokeStyle='rgba(246,242,230,.16)';
+  x.lineWidth=2;
+  rr(x,16,16,W-32,H-32,20);
+  x.stroke();
+
+  x.strokeStyle='rgba(224,192,112,.42)';
+  x.lineWidth=2;
+
+  var m=30, r=16;
+
+  [[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]]
+    .forEach(function(p){
+      x.beginPath();
+      x.moveTo(p[0]+p[2]*r*2, p[1]);
+      x.lineTo(p[0], p[1]);
+      x.lineTo(p[0], p[1]+p[3]*r*2);
+      x.stroke();
+    });
+
+  x.globalAlpha=.16;
+  x.fillStyle='#F6F2E6';
+
+  for(var i=0;i<26;i++){
+    var a=i/26*Math.PI*2;
+    x.beginPath();
+    x.arc(
+      W*.5+Math.cos(a)*W*.40,
+      H*.5+Math.sin(a)*H*.40,
+      1.6,0,7
+    );
+    x.fill();
+  }
+
+  x.globalAlpha=1;
+}
+
+zegarTlo(document.getElementById('zegarTlo'));
+</script>
+
+</body>
+</html>
