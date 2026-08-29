@@ -2,19 +2,16 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Twój spokojny plan — ekstrakt</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dzień — Zielony Hub</title>
 
 <style>
 :root{
   --bg:#191919;
-  --border:#191919;
   --text:#F2F1EA;
   --dim:#849087;
   --accent:#8FCB7B;
-  --track:#2A332C;
-  --glow:rgba(143,203,123,.12);
-
+  --track:#29332C;
   --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   --serif:Georgia,"Times New Roman",serif;
 }
@@ -26,83 +23,82 @@ html,body{
   padding:0;
   width:100%;
   height:100%;
-  background:#191919;
+  background:var(--bg);
 }
 
 body{
+  overflow:hidden;
   font-family:var(--ui);
   -webkit-font-smoothing:antialiased;
-  overflow:hidden;
 }
 
-/* Sam wyciągnięty panel */
-.panel{
+.widget{
   width:100%;
-  min-height:560px;
-  background:#191919;
-  border:0;
-  border-radius:0;
-  box-shadow:none;
-  padding:0 24px;
+  min-height:290px;
+  padding:28px 18px 10px;
   display:flex;
-  align-items:center;
+  align-items:flex-end;
+  background:var(--bg);
 }
 
 .content{
   width:100%;
-  max-width:780px;
+  max-width:none;
 }
 
-/* "TWÓJ SPOKOJNY PLAN" */
-.eyebrow{
+.greeting{
   display:flex;
   align-items:center;
   gap:10px;
-  margin-bottom:10px;
-  color:#8FCB7B;
-  font:700 12px/1 var(--ui);
-  letter-spacing:.15em;
-  text-transform:uppercase;
+  margin-bottom:14px;
+  color:var(--accent);
+  font-size:13px;
+  line-height:1.2;
+  font-weight:700;
 }
 
-.eyebrow::before{
+.greeting::before{
   content:"";
-  width:20px;
+  width:22px;
   height:1px;
   background:var(--accent);
+  flex:none;
+  opacity:.95;
 }
 
-/* Data */
 h1{
   margin:0;
   color:var(--text);
-  font:700 48px/1.04 var(--serif);
-  letter-spacing:-.025em;
+  font-family:var(--serif);
+  font-size:46px;
+  line-height:1.02;
+  font-weight:700;
+  letter-spacing:-.03em;
 }
 
-/* Pasek dnia */
 .progress{
-  margin-top:25px;
+  margin-top:26px;
 }
 
 .labels{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  margin-bottom:9px;
+  justify-content:space-between;
+  margin-bottom:10px;
   color:var(--dim);
-  font:400 13px/1 var(--ui);
+  font-size:12px;
+  font-weight:600;
 }
 
 #percent{
-  color:#78927D;
+  color:#7FA689;
 }
 
 .track{
   width:100%;
   height:9px;
-  background:var(--track);
   border-radius:999px;
+  background:var(--track);
   overflow:hidden;
 }
 
@@ -112,95 +108,172 @@ h1{
   height:100%;
   border-radius:999px;
   background:var(--accent);
-  box-shadow:0 0 8px -4px var(--glow);
   transition:width .45s ease;
 }
 
-@media (max-width:600px){
-  .panel{
-    min-height:420px;
-    padding:0 18px;
+@media(max-width:700px){
+  .widget{
+    min-height:245px;
+    padding:22px 16px 10px;
+  }
+
+  .greeting{
+    font-size:12px;
+    margin-bottom:12px;
   }
 
   h1{
-    font-size:37px;
+    font-size:39px;
   }
-}
 
-  h1{
-    font-size:32px;
+  .progress{
+    margin-top:22px;
+  }
+
+  .labels{
+    font-size:11px;
   }
 }
 </style>
 </head>
 
 <body>
-
-<section class="panel">
+<section class="widget">
   <div class="content">
-
-    <div class="eyebrow">Twój spokojny plan</div>
+    <div class="greeting" id="greeting">Dobrego wieczoru. Odpocznij</div>
 
     <h1 id="date">Sobota, 29 sierpnia</h1>
 
     <div class="progress">
       <div class="labels">
         <span>Dzień</span>
-        <span id="percent">12%</span>
+        <span id="percent">88%</span>
       </div>
 
       <div class="track">
         <i class="fill" id="fill"></i>
       </div>
     </div>
-
   </div>
 </section>
 
 <script>
 const DNI = [
-  "Niedziela",
-  "Poniedziałek",
-  "Wtorek",
-  "Środa",
-  "Czwartek",
-  "Piątek",
-  "Sobota"
+  "Niedziela","Poniedziałek","Wtorek","Środa",
+  "Czwartek","Piątek","Sobota"
 ];
 
 const MIES = [
-  "stycznia",
-  "lutego",
-  "marca",
-  "kwietnia",
-  "maja",
-  "czerwca",
-  "lipca",
-  "sierpnia",
-  "września",
-  "października",
-  "listopada",
-  "grudnia"
+  "stycznia","lutego","marca","kwietnia","maja","czerwca",
+  "lipca","sierpnia","września","października","listopada","grudnia"
 ];
 
-function update(){
-  const now = new Date();
+function addDays(d,n){
+  const x=new Date(d);
+  x.setDate(x.getDate()+n);
+  return x;
+}
 
-  document.getElementById("date").textContent =
+function easterSunday(y){
+  const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
+    f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+    i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,
+    m=Math.floor((a+11*h+22*l)/451),
+    month=Math.floor((h+l-7*m+114)/31),
+    day=((h+l-7*m+114)%31)+1;
+
+  return new Date(y,month-1,day);
+}
+
+function sameDay(a,b){
+  return a.getFullYear()===b.getFullYear() &&
+         a.getMonth()===b.getMonth() &&
+         a.getDate()===b.getDate();
+}
+
+function statutoryHolidays(y){
+  const easter=easterSunday(y);
+
+  return [
+    new Date(y,0,1),
+    new Date(y,0,6),
+    easter,
+    addDays(easter,1),
+    new Date(y,4,1),
+    new Date(y,4,3),
+    addDays(easter,49),
+    addDays(easter,60),
+    new Date(y,7,15),
+    new Date(y,10,1),
+    new Date(y,10,11),
+    new Date(y,11,25),
+    new Date(y,11,26)
+  ];
+}
+
+const SCHOOL_BREAKS = [
+  [new Date(2026,11,23), new Date(2026,11,31)],
+  [new Date(2027,2,25),  new Date(2027,2,30)],
+  [new Date(2027,5,26),  new Date(2027,7,31)]
+];
+
+function inSchoolBreak(now){
+  const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+
+  return SCHOOL_BREAKS.some(([start,end])=>{
+    const s=new Date(start.getFullYear(),start.getMonth(),start.getDate());
+    const e=new Date(end.getFullYear(),end.getMonth(),end.getDate());
+    return t>=s && t<=e;
+  });
+}
+
+function isFreeDay(now){
+  const dow=now.getDay();
+  const holiday=statutoryHolidays(now.getFullYear()).some(d=>sameDay(now,d));
+
+  return dow===0 || dow===6 || holiday || inSchoolBreak(now);
+}
+
+function greetingFor(now){
+  const h=now.getHours();
+  const free=isFreeDay(now);
+
+  if(free){
+    if(h<6)  return "Spokojnej nocy. Odpoczywaj";
+    if(h<10) return "Dobrego poranka. Dziś możesz zwolnić";
+    if(h<14) return "Miłego wolnego dnia. Zrób coś dla siebie";
+    if(h<18) return "Spokojnego popołudnia. Bez pośpiechu";
+    if(h<22) return "Korzystaj z wolnego wieczoru";
+    return "Dobrego wieczoru. Odpocznij";
+  }
+
+  if(h<6)  return "Jeszcze noc. Odpocznij, jeśli możesz";
+  if(h<9)  return "Witaj w ten piękny poranek";
+  if(h<12) return "Dobrego poranka. Spokojnie wejdziesz w rytm";
+  if(h<14) return "To już południe. Dasz radę";
+  if(h<17) return "Popołudnie. Zrób najważniejsze rzeczy po kolei";
+  if(h<20) return "Końcówka dnia. Jeszcze trochę i możesz zwolnić";
+  if(h<22) return "Dobry wieczór. Zwolnij tempo";
+  return "Dzień prawie za Tobą. Czas na odpoczynek";
+}
+
+function update(){
+  const now=new Date();
+
+  document.getElementById("date").textContent=
     `${DNI[now.getDay()]}, ${now.getDate()} ${MIES[now.getMonth()]}`;
 
-  /* Tak samo jak w źródłowym HTML:
-     procent całej doby od 00:00 do 24:00 */
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  const percent = Math.round((minutes / (24 * 60)) * 100);
+  document.getElementById("greeting").textContent=greetingFor(now);
 
-  document.getElementById("percent").textContent = percent + "%";
-  document.getElementById("fill").style.width = percent + "%";
+  const minutes=now.getHours()*60+now.getMinutes();
+  const percent=Math.round((minutes/(24*60))*100);
+
+  document.getElementById("percent").textContent=percent+"%";
+  document.getElementById("fill").style.width=percent+"%";
 }
 
 update();
-setInterval(update, 20000);
+setInterval(update,20000);
 </script>
-
 </body>
 </html>

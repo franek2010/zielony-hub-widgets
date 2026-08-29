@@ -3,246 +3,412 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ile do wolnego — Zielony Hub</title>
+<title>Ile do wolnego — Botanical Cards</title>
 <style>
 :root{
   --notion:#191919;
   --card:#263D30;
-  --card2:#32483B;
-  --text:#F2F3ED;
-  --muted:#87968A;
-
-  --sage:#9DBB9A;
-  --sage-deep:#78957A;
-  --mist:#8FA7A2;
-  --lav:#9C93A6;
-
-  --accent:#8FCB7B;
-  --accent2:#6FA67A;
+  --panel:#2B4335;
+  --panel2:#22362B;
+  --text:#F2F1EA;
+  --muted:#87948B;
+  --sage:#A7C89F;
+  --sage2:#78B36F;
+  --mist:#6FA9B8;
+  --cream:#D8D6C9;
+  --summer:#A387C7;
   --line:rgba(255,255,255,.065);
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
 }
 *{box-sizing:border-box}
 html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
+  margin:0;padding:0;width:100%;height:100%;
   background:var(--notion);
   color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-family:var(--ui);
 }
+body{overflow:hidden;min-height:0}
 #root{
-  width:100vw;
-  height:100vh;
-  margin:0;
-  padding:0;
+  width:100%;
+  min-height:100%;
   display:flex;
-  align-items:flex-start;
   justify-content:center;
+  align-items:flex-start;
   background:var(--notion);
 }
 .widget{
-  width:min(100%, 620px);
-  height:auto;
-  min-width:0;
-  background:var(--card);
+  width:100%;
+  max-width:none;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(157,187,154,.08),transparent 28%),
+    var(--card);
   border-radius:12px;
-  padding:15px 16px 14px;
+  padding:13px 14px 14px;
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
 }
 .top{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
-  flex:0 0 auto;
-}
-.title{
-  position:relative;
-  font-size:13px;
-  font-weight:760;
-  letter-spacing:-.01em;
-  color:var(--text);
-  padding-left:11px;
-}
-.title::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:2px;
-  bottom:2px;
-  width:3px;
-  border-radius:999px;
-  background:var(--sage);
-  opacity:.82;
-}
-.micro{
-  font-size:8px;
-  text-transform:uppercase;
-  letter-spacing:.15em;
-  color:rgba(242,243,237,.26);
-  white-space:nowrap;
-}
-.hero{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 110px;
-  gap:12px;
-  align-items:stretch;
   margin-bottom:10px;
-  flex:0 0 auto;
 }
-.hero-main{
-  background:
-    linear-gradient(135deg,rgba(157,187,154,.055),rgba(143,167,162,.03) 58%),
-    rgba(0,0,0,.065);
-  border:1px solid rgba(157,187,154,.10);
-  border-radius:10px;
-  padding:12px 13px 11px;
-  min-width:0;
+
+
+
+
+
+.notion-pill{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#31493A;
+  color:#F2F1EA;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:12px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:0;
 }
-.kicker{
-  font-size:9px;
-  text-transform:uppercase;
-  letter-spacing:.15em;
-  color:var(--muted);
-  margin-bottom:5px;
+
+.layout{
+  display:grid;
+  grid-template-columns:1.12fr .88fr;
+  gap:0;
+  background:#294133;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:11px;
+  overflow:hidden;
 }
-.hero-name{
-  font-size:18px;
-  font-weight:820;
-  letter-spacing:-.025em;
-  line-height:1.05;
-  margin-bottom:7px;
-}
-.hero-date{
-  font-size:10px;
-  color:var(--muted);
-}
-.countbox{
+
+/* LEFT: feature card */
+.feature{
   position:relative;
-  background:#30473A;
-  color:var(--text);
-  border:1px solid rgba(255,255,255,.055);
-  border-radius:10px;
+  min-height:132px;
+  border-radius:0;
+  background:#294133;
+  border:0;
+  border-right:1px solid rgba(255,255,255,.055);
+  padding:14px 15px 13px;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  min-height:88px;
-  overflow:hidden;
 }
-.countbox::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:3px;
-  background:var(--sage);
-  opacity:.72;
-}
-.count{
-  font-size:32px;
-  font-weight:820;
-  line-height:.9;
-  color:#C8D3CA;
-  font-variant-numeric:tabular-nums;
-}
-.count-label{
-  margin-top:5px;
+
+
+.kicker{
   font-size:8px;
-  font-weight:750;
   text-transform:uppercase;
-  letter-spacing:.12em;
-  color:#7F9183;
+  letter-spacing:.16em;
+  color:var(--muted);
+  margin-bottom:8px;
 }
-.timeline{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:8px;
-  flex:1 1 auto;
-  min-height:0;
-}
-.tile{
-  position:relative;
-  min-width:0;
-  background:#2B4335;
-  border:1px solid rgba(255,255,255,.05);
-  border-radius:9px;
-  padding:10px 10px 9px;
-  overflow:hidden;
-}
-.tile:before{
-  content:"";
-  position:absolute;
-  left:0;top:0;bottom:0;width:2px;
-  background:var(--sage-deep);
-  opacity:.66;
-}
-
-
-.tile-name{
-  font-size:11px;
-  font-weight:730;
+.feature-name{
+  font:800 20px/1.08 var(--ui);
+  letter-spacing:-.018em;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  padding-left:3px;
-}
-.tile-meta{
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:8px;
-  margin-top:6px;
-  padding-left:3px;
-}
-.tile-date{
-  font-size:9px;
-  color:var(--muted);
-  white-space:nowrap;
-}
-.tile-days{
-  font-size:13px;
-  font-weight:760;
-  color:#86A78D;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
 }
 
-@media(max-width:560px){
-  .hero{grid-template-columns:1fr 92px}
-  .count{font-size:30px}
-  .timeline{grid-template-columns:1fr}
-  html,body{overflow:auto}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.feature-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:2px;
 }
+.feature-date-chip{
+  flex:none;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(157,187,154,.10);
+  border:1px solid rgba(157,187,154,.10);
+  color:#A9B8AC;
+  font-size:9px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.feature-bottom{
+  margin-top:auto;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  padding-top:18px;
+}
+.countbox{
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+}
+.countbox b{
+  font:800 28px/.9 var(--ui);
+  color:#C8D3CA;
+  letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+}
+.countbox span{
+  font-size:8px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  color:#7E8F82;
+  margin-bottom:3px;
+  white-space:nowrap;
+}
+.feature-hint{
+  max-width:105px;
+  text-align:right;
+  color:#8D9B90;
+  font-size:9px;
+  line-height:1.35;
+}
+
+
+.event:last-child{border-bottom:0}
+
+/* tiny category rail stays as the only color cue */
+.event::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:12px;
+  bottom:12px;
+  width:2px;
+  border-radius:999px;
+  background:var(--sage2);
+  opacity:.72;
+}
+
+/* stronger hierarchy in unified block */
+.feature-main{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  margin-top:2px;
+}
+.feature-date-chip{
+  flex:none;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(157,187,154,.08);
+  border:1px solid rgba(157,187,154,.08);
+  color:#A9B8AC;
+  font-size:9px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.feature-bottom{
+  margin-top:auto;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  gap:12px;
+  padding-top:18px;
+}
+.feature-hint{
+  max-width:none;
+  text-align:left;
+  color:#8D9B90;
+  font-size:9px;
+  line-height:1.35;
+  padding-bottom:2px;
+}
+
+/* RIGHT: stacked mini cards */
+.stack{
+  display:grid;
+  grid-template-rows:repeat(3,1fr);
+  gap:0;
+  background:#294133;
+  padding:0;
+}
+.event{
+  position:relative;
+  min-height:44px;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  border-radius:0;
+  padding:8px 12px 8px 16px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  overflow:hidden;
+}
+.event::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;width:3px;
+  background:var(--sage2);
+  opacity:.72;
+}
+
+
+.event-name{
+  font-size:10.5px;
+  font-weight:760;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.event-date{
+  margin-top:3px;
+  font-size:8px;
+  color:var(--muted);
+}
+.event-days{
+  min-width:55px;
+  text-align:right;
+  font-size:12px;
+  font-weight:760;
+  color:#91AA95;
+  font-variant-numeric:tabular-nums;
+}
+
+
+
+
+.event.holiday::before{background:#78B36F;opacity:.95}
+.event.break::before{background:#6FA9B8;opacity:.95}
+.event.summer::before{background:#A387C7;opacity:.95}
+.event.holiday .event-days{color:#8FCB86}
+.event.break .event-days{color:#83B8C5}
+.event.summer .event-days{color:#B39AD0}
+
+.legend{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:11px;
+  margin-top:10px;
+  padding-top:9px;
+  border-top:1px solid rgba(255,255,255,.05);
+  font-size:8px;
+  color:rgba(242,241,234,.38);
+}
+.legend span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.dot{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  display:inline-block;
+}
+.dot.holiday{background:var(--sage2)}
+.dot.break{background:var(--mist)}
+.dot.summer{background:#928FA0}
+
+@media(max-width:500px){
+  .widget{padding:14px}
+  .notion-pill{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#31493A;
+  color:#F2F1EA;
+  font:800 11px/1 var(--ui);
+  letter-spacing:0;
+}
+
+.layout{grid-template-columns:1fr}
+  .feature{min-height:150px}
+  .stack{grid-template-columns:1fr}
+  .event{display:grid;padding-right:11px}
+  .event-days{text-align:left;margin-top:4px}
+  
+}
+
+@media(max-width:500px){
+  .layout{grid-template-columns:1fr}
+  .feature{
+    border-right:0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+    min-height:145px;
+  }
+  .stack{grid-template-rows:repeat(3,auto)}
+}
+
+
+.event.holiday{background:linear-gradient(90deg,rgba(120,179,111,.07),transparent 34%)}
+.event.break{background:linear-gradient(90deg,rgba(111,169,184,.07),transparent 34%)}
+.event.summer{background:linear-gradient(90deg,rgba(163,135,199,.075),transparent 34%)}
+
+.legend{
+  gap:13px;
+}
+.legend span{
+  color:rgba(242,241,234,.52);
+  font-weight:650;
+}
+.dot{
+  width:7px;
+  height:7px;
+}
+.dot.holiday{background:#78B36F}
+.dot.break{background:#6FA9B8}
+.dot.summer{background:#A387C7}
+
 </style>
 </head>
 <body>
 <div id="root">
-  <section class="widget" aria-label="Ile do wolnego">
+  <section class="widget">
     <div class="top">
-      <div class="title">Ile do wolnego</div>
-      <div class="micro">szkolny radar</div>
+      <div class="notion-pill">Ile do wolnego</div>
     </div>
 
-    <div class="hero">
-      <div class="hero-main">
+    <div class="layout">
+      <div class="feature">
         <div class="kicker">najbliższe wolne</div>
-        <div class="hero-name" id="heroName">Weekend</div>
-        <div class="hero-date" id="heroDate">—</div>
+
+        <div class="feature-main">
+          <div class="feature-name" id="heroName">Weekend</div>
+          <div class="feature-date-chip" id="heroDate">29 sie</div>
+        </div>
+
+        <div class="feature-bottom">
+          <div class="countbox">
+            <b id="heroCount">0</b>
+            <span id="heroLabel">dni do wolnego</span>
+          </div>
+          
+        </div>
       </div>
-      <div class="countbox">
-        <div class="count" id="heroCount">0</div>
-        <div class="count-label" id="heroLabel">dni</div>
-      </div>
+
+      <div class="stack" id="stack"></div>
     </div>
 
-    <div class="timeline" id="timeline"></div>
+    <div class="legend">
+      <span><i class="dot holiday"></i>święto</span>
+      <span><i class="dot break"></i>przerwa szkolna</span>
+      <span><i class="dot summer"></i>wakacje</span>
+    </div>
   </section>
 </div>
 
@@ -253,52 +419,43 @@ html,body{
   const diff=(d,now)=>Math.max(0,Math.round((sod(d)-sod(now))/DAY));
   const fmt=d=>new Intl.DateTimeFormat('pl-PL',{day:'numeric',month:'short'}).format(d);
 
+  function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+
   function easterSunday(y){
     const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
-    f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
-    i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,
-    m=Math.floor((a+11*h+22*l)/451),
-    month=Math.floor((h+l-7*m+114)/31),
-    day=((h+l-7*m+114)%31)+1;
+      f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+      i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,
+      m=Math.floor((a+11*h+22*l)/451),
+      month=Math.floor((h+l-7*m+114)/31),
+      day=((h+l-7*m+114)%31)+1;
     return new Date(y,month-1,day);
-  }
-
-  function addDays(d,n){
-    const x=new Date(d);
-    x.setDate(x.getDate()+n);
-    return x;
   }
 
   function nextWeekend(now){
     const d=now.getDay();
-    if(d===6 || d===0){
-      // Nie pokazujemy "trwa" — najbliższe wolne po prostu ma 0 dni.
-      return {name:'Weekend',date:sod(now),kind:'weekend'};
-    }
-    return {name:'Weekend',date:addDays(sod(now),6-d),kind:'weekend'};
+    if(d===6||d===0) return {name:'Weekend',date:sod(now),kind:'holiday'};
+    return {name:'Weekend',date:addDays(sod(now),6-d),kind:'holiday'};
   }
 
-  // Oficjalne ogólnopolskie przerwy szkolne 2026/2027.
   const schoolBreaks=[
-    {name:'Przerwa świąteczna',date:new Date(2026,11,23),until:new Date(2026,11,31)},
-    {name:'Wiosenna przerwa',date:new Date(2027,2,25),until:new Date(2027,2,30)},
-    {name:'Wakacje',date:new Date(2027,5,26),until:new Date(2027,7,31)}
+    {name:'Przerwa świąteczna',date:new Date(2026,11,23),until:new Date(2026,11,31),kind:'break'},
+    {name:'Wiosenna przerwa',date:new Date(2027,2,25),until:new Date(2027,2,30),kind:'break'},
+    {name:'Wakacje',date:new Date(2027,5,26),until:new Date(2027,7,31),kind:'summer'}
   ];
 
   function statutory(y){
     const easter=easterSunday(y);
     return [
-      {name:'Nowy Rok',date:new Date(y,0,1)},
-      {name:'Trzech Króli',date:new Date(y,0,6)},
-      {name:'Poniedziałek Wielkanocny',date:addDays(easter,1)},
-      {name:'1 maja',date:new Date(y,4,1)},
-      {name:'3 maja',date:new Date(y,4,3)},
-      {name:'Boże Ciało',date:addDays(easter,60)},
-      {name:'15 sierpnia',date:new Date(y,7,15)},
-      {name:'Wszystkich Świętych',date:new Date(y,10,1)},
-      {name:'11 listopada',date:new Date(y,10,11)},
-      {name:'Boże Narodzenie',date:new Date(y,11,25)},
-      {name:'Drugi dzień Świąt',date:new Date(y,11,26)}
+      {name:'Nowy Rok',date:new Date(y,0,1),kind:'holiday'},
+      {name:'Trzech Króli',date:new Date(y,0,6),kind:'holiday'},
+      {name:'Poniedziałek Wielkanocny',date:addDays(easter,1),kind:'holiday'},
+      {name:'1 maja',date:new Date(y,4,1),kind:'holiday'},
+      {name:'3 maja',date:new Date(y,4,3),kind:'holiday'},
+      {name:'Boże Ciało',date:addDays(easter,60),kind:'holiday'},
+      {name:'Wszystkich Świętych',date:new Date(y,10,1),kind:'holiday'},
+      {name:'11 listopada',date:new Date(y,10,11),kind:'holiday'},
+      {name:'Boże Narodzenie',date:new Date(y,11,25),kind:'holiday'},
+      {name:'Drugi dzień Świąt',date:new Date(y,11,26),kind:'holiday'}
     ];
   }
 
@@ -316,7 +473,7 @@ html,body{
           name:b.name,
           date:active?sod(now):b.date,
           until:b.until,
-          kind:'break'
+          kind:b.kind
         });
       }
     }
@@ -327,7 +484,7 @@ html,body{
         const dow=e.date.getDay();
         if(dow===0||dow===6) continue;
         if(inBreak(e.date)) continue;
-        events.push({...e,kind:'holiday'});
+        events.push(e);
       }
     }
 
@@ -335,47 +492,49 @@ html,body{
     events=events.filter(e=>{
       const key=e.name+'|'+sod(e.date).getTime();
       if(seen.has(key)) return false;
-      seen.add(key);
-      return true;
+      seen.add(key); return true;
     });
 
     events.sort((a,b)=>sod(a.date)-sod(b.date));
     return events;
   }
 
+  function human(n){
+    if(n===0) return {big:'0',small:'dni do wolnego'};
+    if(n===1) return {big:'1',small:'dzień do wolnego'};
+    return {big:String(n),small:'dni do wolnego'};
+  }
+
   function render(){
     const now=new Date();
     const events=collect(now);
     const hero=events[0];
-    const heroDays=diff(hero.date,now);
+    const h=human(diff(hero.date,now));
 
     document.getElementById('heroName').textContent=hero.name;
     document.getElementById('heroDate').textContent=
       hero.until ? `${fmt(hero.date)} – ${fmt(hero.until)}` : fmt(hero.date);
-    document.getElementById('heroCount').textContent=heroDays;
-    document.getElementById('heroLabel').textContent=heroDays===1?'dzień':'dni';
+    document.getElementById('heroCount').textContent=h.big;
+    document.getElementById('heroLabel').textContent=h.small;
 
-    const timeline=document.getElementById('timeline');
-    timeline.innerHTML='';
+    const stack=document.getElementById('stack');
+    stack.innerHTML='';
 
-    events.slice(1,4).forEach(e=>{
+    events.slice(1,4).forEach((e,i)=>{
       const d=diff(e.date,now);
-      const tile=document.createElement('div');
-      tile.className='tile';
-      tile.innerHTML=
-        '<div class="tile-name"></div>'+
-        '<div class="tile-meta">'+
-          '<div class="tile-date"></div>'+
-          '<div class="tile-days"></div>'+
-        '</div>';
+      const item=document.createElement('div');
+      item.className='event '+(e.kind||'holiday');
+      item.innerHTML=
+        '<div><div class="event-name"></div><div class="event-date"></div></div>'+
+        '<div class="event-days"></div>';
 
-      tile.querySelector('.tile-name').textContent=e.name;
-      tile.querySelector('.tile-date').textContent=
+      item.querySelector('.event-name').textContent=e.name;
+      item.querySelector('.event-date').textContent=
         e.until ? `${fmt(e.date)}–${fmt(e.until)}` : fmt(e.date);
-      tile.querySelector('.tile-days').textContent=
-        d===1 ? '1 dzień' : d+' dni';
+      item.querySelector('.event-days').textContent=
+        d===0?'dzisiaj':d===1?'1 dzień':d+' dni';
 
-      timeline.appendChild(tile);
+      stack.appendChild(item);
     });
   }
 
@@ -385,12 +544,8 @@ html,body{
 </script>
 </body>
 </html>
-
 <style>
-.tile:nth-child(2)::before{background:var(--mist);opacity:.72}
-.tile:nth-child(3)::before{background:var(--lav);opacity:.66}
-
-.tile-days{color:#8DAF91}
-
-.tile:nth-child(3) .tile-days{color:#9C93A6}
+@media (min-width:501px){
+  .widget{min-height:0}
+}
 </style>
