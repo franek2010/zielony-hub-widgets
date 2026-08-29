@@ -40,17 +40,21 @@ body{overflow:hidden;min-height:0}
 .widget{
   width:100%;
   max-width:none;
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
   background:
     radial-gradient(circle at 100% 0%,rgba(157,187,154,.08),transparent 28%),
     var(--card);
   border-radius:12px;
-  padding:13px 14px 14px;
+  padding:13px 14px 12px;
   overflow:hidden;
 }
 .top{
   display:flex;
   align-items:center;
-  margin-bottom:10px;
+  margin-bottom:9px;
 }
 
 
@@ -84,12 +88,12 @@ body{overflow:hidden;min-height:0}
 /* LEFT: feature card */
 .feature{
   position:relative;
-  min-height:132px;
+  min-height:122px;
   border-radius:0;
   background:#294133;
   border:0;
   border-right:1px solid rgba(255,255,255,.055);
-  padding:14px 15px 13px;
+  padding:12px 14px 11px;
   overflow:hidden;
   display:flex;
   flex-direction:column;
@@ -244,12 +248,12 @@ body{overflow:hidden;min-height:0}
 }
 .event{
   position:relative;
-  min-height:44px;
+  min-height:40px;
   background:transparent;
   border:0;
   border-bottom:1px solid rgba(255,255,255,.05);
   border-radius:0;
-  padding:8px 12px 8px 16px;
+  padding:7px 11px 7px 15px;
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
   gap:10px;
@@ -266,7 +270,8 @@ body{overflow:hidden;min-height:0}
 
 
 .event-name{
-  font-size:10.5px;
+  font-size:11.5px;
+  line-height:1.15;
   font-weight:760;
   white-space:nowrap;
   overflow:hidden;
@@ -274,16 +279,20 @@ body{overflow:hidden;min-height:0}
 }
 .event-date{
   margin-top:3px;
-  font-size:8px;
-  color:var(--muted);
+  font-size:10px;
+  line-height:1.15;
+  font-weight:600;
+  color:#A2AFA5;
 }
 .event-days{
   min-width:55px;
   text-align:right;
-  font-size:12px;
+  font-size:13px;
+  line-height:1;
   font-weight:760;
   color:#91AA95;
   font-variant-numeric:tabular-nums;
+  white-space:nowrap;
 }
 
 
@@ -302,8 +311,8 @@ body{overflow:hidden;min-height:0}
   justify-content:flex-end;
   flex-wrap:wrap;
   gap:11px;
-  margin-top:10px;
-  padding-top:9px;
+  margin-top:7px;
+  padding-top:7px;
   border-top:1px solid rgba(255,255,255,.05);
   font-size:8px;
   color:rgba(242,241,234,.38);
